@@ -24,13 +24,23 @@ Set up ACE Mixer and get it ready, then stop.
    browser instead and macOS refuses to run it:
        xattr -d com.apple.quarantine ./ace-mixer-macos
 
-3. Download the LibreSVIP CLI build for this platform from
+3. Install the skill, otherwise you have the tool but not the know-how:
+     curl -L -o ace-mixer-skill.zip https://github.com/KakaruHayate/ACE-MIXER/releases/latest/download/ace-mixer-skill.zip
+   Unzip it and put the folder ace-v27-style-transfer into your skills
+   directory, keeping the folder name:
+     Codex:        $CODEX_HOME/skills        (default ~/.codex/skills)
+     Claude Code:  ~/.claude/skills
+   Confirm <skills>/ace-v27-style-transfer/SKILL.md exists. If your harness
+   has no skills directory, keep the folder and read SKILL.md before running
+   anything.
+
+4. Download the LibreSVIP CLI build for this platform from
    https://github.com/SoulMelody/LibreSVIP/releases/latest
    Pick the asset named LibreSVIP-CLI-<version>.<platform>.zip / .tar.gz
    (win-amd64, macos-arm64, macos-x86_64), extract it, and remember the full
    path of libresvip-cli.exe (Windows) or libresvip-cli (macOS).
 
-4. Run:
+5. Run:
      Windows:  .\ace-mixer.exe doctor --libresvip "<path>\libresvip-cli.exe"
      macOS:    ./ace-mixer-macos doctor --libresvip "<path>/libresvip-cli"
    It prints one line per dependency: acestudio-cli, libresvip-cli, and a
@@ -89,6 +99,10 @@ Hand [`INSTALL_PROMPT.md`](INSTALL_PROMPT.md) to an agent, or install by hand:
 - **macOS (Apple Silicon)**: download `ace-mixer-macos`, then `chmod +x` it.
   Intel Macs have no prebuilt binary — the bundled numpy is arm64-only — so
   use the source install below.
+- **Skill**: `ace-mixer-skill.zip` from the same release. Unzip it and drop
+  `ace-v27-style-transfer/` into your agent's skills directory
+  (`$CODEX_HOME/skills`, `~/.codex/skills`, or `~/.claude/skills`). The binary
+  is the tool; the skill is what tells an agent how to use it.
 - **From source** (any platform, needs Python 3.10+ and `uv`):
 
   ```bash

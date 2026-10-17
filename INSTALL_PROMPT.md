@@ -32,13 +32,24 @@ Set up **ACE Mixer** on this machine and then run one mix.
 
    Then every `ace-mixer` below becomes `uv run ace-mixer`.
 
-3. Get the LibreSVIP CLI. The GUI build has no usable CLI, so download the CLI
+3. Install the skill. The binary is only the tool; the workflow lives in
+   `skill/ace-v27-style-transfer`. Either copy that folder out of the
+   checkout, or download `ace-mixer-skill.zip` from the release and unzip it.
+   Put the folder in your skills directory, keeping its name:
+   - Codex: `$CODEX_HOME/skills` (default `~/.codex/skills`)
+   - Claude Code: `~/.claude/skills`
+
+   Confirm `<skills>/ace-v27-style-transfer/SKILL.md` exists. If your harness
+   has no skills directory, keep the folder and read `SKILL.md` before running
+   anything.
+
+4. Get the LibreSVIP CLI. The GUI build has no usable CLI, so download the CLI
    asset from <https://github.com/SoulMelody/LibreSVIP/releases/latest> —
    `LibreSVIP-CLI-<version>.win-amd64.zip`, `.macos-arm64.tar.gz` or
    `.macos-x86_64.tar.gz` — and extract it. Remember the full path to
    `libresvip-cli.exe` / `libresvip-cli`.
 
-4. Verify the chain **before** touching any project:
+5. Verify the chain **before** touching any project:
 
    ```bash
    ace-mixer doctor --libresvip "<path to libresvip-cli>"
@@ -48,11 +59,11 @@ Set up **ACE Mixer** on this machine and then run one mix.
    least one Verse 2.7 track. Do not continue if any line says FAIL — report
    that line and stop.
 
-5. Ask me for the folder holding the project and its dry render, and for the
+6. Ask me for the folder holding the project and its dry render, and for the
    mix ratio (0 = keep the ACE voice's own expression, 1 = only the source's
    shape). If I do not give a ratio, use 0.5.
 
-6. Run a dry pass first, show me the per-parameter summary, and only then
+7. Run a dry pass first, show me the per-parameter summary, and only then
    write:
 
    ```bash

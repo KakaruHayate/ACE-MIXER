@@ -110,6 +110,8 @@ jobs:
           cp artifacts/ace-mixer-Windows/ace-mixer.exe release/ace-mixer.exe
           cp artifacts/ace-mixer-macOS/ace-mixer-macos release/ace-mixer-macos
           chmod +x release/ace-mixer-macos
+          cd skill && zip -r ../release/ace-mixer-skill.zip ace-v27-style-transfer
+          cd ..
           (cd release && sha256sum * > SHA256SUMS.txt)
           ls -l release
 
@@ -118,5 +120,6 @@ jobs:
           files: |
             release/ace-mixer.exe
             release/ace-mixer-macos
+            release/ace-mixer-skill.zip
             release/SHA256SUMS.txt
           generate_release_notes: true
