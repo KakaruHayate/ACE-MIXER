@@ -9,8 +9,30 @@ permissions:
   contents: write
 
 jobs:
+  check-version:
+    name: tag matches package version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compare tag with ace_mixer.__version__
+        run: |
+          python - <<'PY'
+          import os, re, sys
+          ref = os.environ.get("GITHUB_REF_NAME", "")
+          if not ref.startswith("v"):
+              print("manual run, skipping")
+              sys.exit(0)
+          src = open("ace_mixer/__init__.py", encoding="utf-8").read()
+          version = re.search(r'__version__ = "([^"]+)"', src).group(1)
+          tag = ref.lstrip("v")
+          print("tag=%s package=%s" % (tag, version))
+          sys.exit(0 if tag == version else 1)
+          PY
+
   build:
     name: build (${{ matrix.os }})
+    needs: check-version
     strategy:
       fail-fast: false
       matrix:
