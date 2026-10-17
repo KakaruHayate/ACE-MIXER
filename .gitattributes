@@ -1,0 +1,8 @@
+* text=auto eol=lf
+
+# Windows tooling: PowerShell reads both, but CRLF keeps editors happy.
+*.ps1 text eol=crlf
+*.bat text eol=crlf
+
+# The bundled analysis chain is a verbatim copy; pin its line endings.
+ace_mixer/chain.py text eol=lf
