@@ -16,7 +16,12 @@ Set up **ACE Mixer** on this machine and then run one mix.
 2. Install the tool. Prefer the prebuilt exe; otherwise clone and install:
 
    ```bash
+   # prebuilt, no Python needed
+   # https://github.com/KakaruHayate/ACE-MIXER/releases/latest
+
    git clone https://github.com/KakaruHayate/ACE-MIXER
+   # mainland-China mirror (a first 502 means "still caching", retry):
+   # git clone https://gitclone.com/github.com/KakaruHayate/ACE-MIXER.git
    cd ACE-MIXER
    uv venv && uv pip install -e .
    ```
