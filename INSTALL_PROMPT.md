@@ -7,14 +7,15 @@ on this machine.
 
 Set up **ACE Mixer** on this machine and then run one mix.
 
-1. Detect the platform first. ACE Studio runs on Windows and macOS only; on
-   Linux, stop and say so.
+1. Detect the platform first (`uname -m` on macOS). ACE Studio runs on Windows
+   and macOS only; on Linux, stop and say so. Intel Macs have no prebuilt
+   binary (the bundled numpy is arm64-only) — use the source install.
 
 2. Get the binary — no Python is needed for this path:
 
    - Windows: `ace-mixer.exe` from
      <https://github.com/KakaruHayate/ACE-MIXER/releases/latest>
-   - macOS: `ace-mixer-macos` from the same release, then `chmod +x`
+   - macOS (Apple Silicon): `ace-mixer-macos` from the same release, then `chmod +x`
      (if a browser download makes macOS refuse to run it:
      `xattr -d com.apple.quarantine ./ace-mixer-macos`)
 

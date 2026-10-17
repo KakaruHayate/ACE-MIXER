@@ -8,10 +8,11 @@ the machine is ready and the agent only needs a folder and a ratio from you.
 ```text
 Set up ACE Mixer and get it ready, then stop.
 
-1. Detect the platform. ACE Studio only runs on Windows and macOS; on Linux,
-   stop and tell me ACE Mixer cannot run there.
-     Windows -> ace-mixer.exe
-     macOS   -> ace-mixer-macos
+1. Detect the platform (`uname -m` on macOS). ACE Studio only runs on Windows
+   and macOS; on Linux, stop and tell me ACE Mixer cannot run there.
+     Windows          -> ace-mixer.exe
+     macOS arm64      -> ace-mixer-macos
+     macOS Intel      -> no prebuilt; build from source (step 5)
 
 2. Download the ACE Mixer binary:
      Windows:
@@ -85,7 +86,9 @@ Hand [`INSTALL_PROMPT.md`](INSTALL_PROMPT.md) to an agent, or install by hand:
 
 - **Windows**: download `ace-mixer.exe` from
   [Releases](https://github.com/KakaruHayate/ACE-MIXER/releases/latest).
-- **macOS**: download `ace-mixer-macos`, then `chmod +x` it.
+- **macOS (Apple Silicon)**: download `ace-mixer-macos`, then `chmod +x` it.
+  Intel Macs have no prebuilt binary — the bundled numpy is arm64-only — so
+  use the source install below.
 - **From source** (any platform, needs Python 3.10+ and `uv`):
 
   ```bash
