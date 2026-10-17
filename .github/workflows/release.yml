@@ -42,6 +42,7 @@ jobs:
             --onefile --noconfirm --clean --name ace-mixer
             --distpath dist --workpath build/pyi --specpath build/pyi
             --add-data "$PWD/ace_mixer/chain.py:ace_mixer"
+            --paths "$PWD"
             --exclude-module pkg_resources --exclude-module setuptools
             --exclude-module distutils --exclude-module plistlib
             --exclude-module xml

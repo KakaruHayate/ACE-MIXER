@@ -29,6 +29,8 @@ $common = @(
     "--specpath", (Join-Path $env:TEMP "ace-mixer-pyi"),
     # Absolute source path: --specpath moves the base directory for relatives.
     "--add-data", ((Join-Path $root "ace_mixer\chain.py") + ";ace_mixer"),
+    # The entry script lives in tools\, so the package root must be explicit.
+    "--paths", $root,
     # numpy pulls pkg_resources -> plistlib -> pyexpat, whose DLL is not
     # collected; excluding the chain keeps the exe startable.
     "--exclude-module", "pkg_resources",
