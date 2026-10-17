@@ -9,8 +9,17 @@ permissions:
   contents: write
 
 jobs:
-  release:
-    runs-on: windows-latest
+  build:
+    name: build (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            asset: ace-mixer.exe
+          - os: macos-latest
+            asset: ace-mixer-macos
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
 
@@ -18,24 +27,73 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Build
+      - name: Build (Windows)
+        if: runner.os == 'Windows'
         shell: pwsh
         run: ./tools/build_exes.ps1 -Python python -OutDir dist
 
-      - name: Smoke test
+      - name: Build (macOS)
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install "numpy>=1.24" "PyYAML>=6.0" pyinstaller
+          common=(
+            --onefile --noconfirm --clean --name ace-mixer
+            --distpath dist --workpath build/pyi --specpath build/pyi
+            --add-data "ace_mixer/chain.py:ace_mixer"
+            --exclude-module pkg_resources --exclude-module setuptools
+            --exclude-module distutils --exclude-module plistlib
+            --exclude-module xml
+          )
+          pyinstaller --target-arch universal2 "${common[@]}" tools/entry.py \
+            || { echo "universal2 unavailable, building for this runner only"; \
+                 rm -rf dist build/pyi; \
+                 pyinstaller "${common[@]}" tools/entry.py; }
+          mv dist/ace-mixer "dist/${{ matrix.asset }}"
+          chmod +x "dist/${{ matrix.asset }}"
+
+      - name: Smoke test (Windows)
+        if: runner.os == 'Windows'
         shell: pwsh
         run: |
           ./dist/ace-mixer.exe --version
           ./dist/ace-mixer.exe --help
 
-      - name: Package
-        shell: pwsh
-        run: Compress-Archive -Path dist/ace-mixer.exe -DestinationPath dist/ace-mixer-windows-x64.zip
+      - name: Smoke test (macOS)
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          "./dist/${{ matrix.asset }}" --version
+          "./dist/${{ matrix.asset }}" --help
 
-      - name: Attach to release
-        uses: softprops/action-gh-release@v2
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ace-mixer-${{ runner.os }}
+          path: dist/${{ matrix.asset }}
+          if-no-files-found: error
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Collect assets
+        run: |
+          mkdir -p release
+          cp artifacts/ace-mixer-Windows/ace-mixer.exe release/ace-mixer.exe
+          cp artifacts/ace-mixer-macOS/ace-mixer-macos release/ace-mixer-macos
+          chmod +x release/ace-mixer-macos
+          (cd release && sha256sum * > SHA256SUMS.txt)
+          ls -l release
+
+      - uses: softprops/action-gh-release@v2
         with:
           files: |
-            dist/ace-mixer.exe
-            dist/ace-mixer-windows-x64.zip
+            release/ace-mixer.exe
+            release/ace-mixer-macos
+            release/SHA256SUMS.txt
           generate_release_notes: true

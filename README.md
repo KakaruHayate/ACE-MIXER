@@ -8,30 +8,39 @@ the machine is ready and the agent only needs a folder and a ratio from you.
 ```text
 Set up ACE Mixer and get it ready, then stop.
 
-1. Download the prebuilt binary from
-   https://github.com/KakaruHayate/ACE-MIXER/releases/latest
-   (ace-mixer.exe). If github.com is slow, the repo mirror is
-   https://gitclone.com/github.com/KakaruHayate/ACE-MIXER — a 502 there
-   usually means it is still caching; retry after a minute.
+1. Detect the platform. ACE Studio only runs on Windows and macOS; on Linux,
+   stop and tell me ACE Mixer cannot run there.
+     Windows -> ace-mixer.exe
+     macOS   -> ace-mixer-macos
 
-2. If you prefer building from source:
-     git clone https://github.com/KakaruHayate/ACE-MIXER
-     # mirror: git clone https://gitclone.com/github.com/KakaruHayate/ACE-MIXER.git
-     cd ACE-MIXER
-     uv venv && uv pip install -e .
-     uv run ace-mixer doctor
+2. Download the ACE Mixer binary:
+     Windows:
+       curl -L -o ace-mixer.exe https://github.com/KakaruHayate/ACE-MIXER/releases/latest/download/ace-mixer.exe
+     macOS:
+       curl -L -o ace-mixer-macos https://github.com/KakaruHayate/ACE-MIXER/releases/latest/download/ace-mixer-macos
+       chmod +x ace-mixer-macos
+   curl does not set the macOS quarantine flag. If you downloaded with a
+   browser instead and macOS refuses to run it:
+       xattr -d com.apple.quarantine ./ace-mixer-macos
 
-3. You need, on this machine:
-   - ACE Studio running, with a Verse 2.7 track that already holds notes
-   - a CLI build of LibreSVIP (the GUI build has no CLI); set LIBRESVIP_CLI
-     to its path if it is not in a default location
-   - Python 3.10+ with uv, only if you build from source
+3. Download the LibreSVIP CLI build for this platform from
+   https://github.com/SoulMelody/LibreSVIP/releases/latest
+   Pick the asset named LibreSVIP-CLI-<version>.<platform>.zip / .tar.gz
+   (win-amd64, macos-arm64, macos-x86_64), extract it, and remember the full
+   path of libresvip-cli.exe (Windows) or libresvip-cli (macOS).
 
-4. Run:  ace-mixer doctor      (or: uv run ace-mixer doctor)
-   It prints one line per dependency. Do not continue if any line says FAIL:
-   report that line instead. When all three say OK, reply exactly
-   "ACE Mixer is ready" and wait for me to give you a folder and a ratio.
+4. Run:
+     Windows:  .\ace-mixer.exe doctor --libresvip "<path>\libresvip-cli.exe"
+     macOS:    ./ace-mixer-macos doctor --libresvip "<path>/libresvip-cli"
+   It prints one line per dependency: acestudio-cli, libresvip-cli, and a
+   Verse 2.7 track. Do not continue if any line says FAIL — report that line
+   and stop. When all three say OK, reply exactly "ACE Mixer is ready" and
+   wait for me to give you a folder and a ratio.
 ```
+
+If a download from github.com is slow, `https://gitclone.com` mirrors git
+clones (`git clone https://gitclone.com/github.com/KakaruHayate/ACE-MIXER.git`)
+but not release assets; a first 502 there just means it is still caching.
 
 ## What it does
 
@@ -50,8 +59,8 @@ those curves into the target clip — optionally blended with what the ACE voice
 would have done on its own.
 
 ```text
-project  ──► .ufdata ──► notes + absolute pitch curve
-dry render ─► four ACE parameter curves
+project    ──► .ufdata ──► notes + absolute pitch curve
+dry render ──► four ACE parameter curves
                     └─► mix at ratio w ──► clip's `user` layer
 ```
 
@@ -68,26 +77,26 @@ the only channel that carries *how* a phrase is sung.
 | ACE Studio | running, with `acestudio-cli` (ships with the app) |
 | A Verse 2.7 track | with a non-empty sing clip |
 | `libresvip-cli` | a CLI build of LibreSVIP (the GUI build has none) |
-| Python 3.10+ | only if you run from source; the exe needs nothing |
+| | no Python needed when you use a release binary |
 
 ## Install
 
 Hand [`INSTALL_PROMPT.md`](INSTALL_PROMPT.md) to an agent, or install by hand:
 
-```bash
-git clone https://github.com/KakaruHayate/ACE-MIXER
-cd ACE-MIXER
-uv venv && uv pip install -e .
-uv run ace-mixer doctor
-```
+- **Windows**: download `ace-mixer.exe` from
+  [Releases](https://github.com/KakaruHayate/ACE-MIXER/releases/latest).
+- **macOS**: download `ace-mixer-macos`, then `chmod +x` it.
+- **From source** (any platform, needs Python 3.10+ and `uv`):
 
-Mainland China mirror: `git clone
-https://gitclone.com/github.com/KakaruHayate/ACE-MIXER.git`. The mirror caches
-on first request, so an initial 502 just means "retry in a minute".
+  ```bash
+  git clone https://github.com/KakaruHayate/ACE-MIXER
+  cd ACE-MIXER
+  uv venv && uv pip install -e .
+  uv run ace-mixer doctor
+  ```
 
-Prebuilt: grab `ace-mixer.exe` from
-[Releases](https://github.com/KakaruHayate/ACE-MIXER/releases/latest) — no
-Python needed.
+  Mainland-China mirror: `git clone
+  https://gitclone.com/github.com/KakaruHayate/ACE-MIXER.git`.
 
 ## Use
 
