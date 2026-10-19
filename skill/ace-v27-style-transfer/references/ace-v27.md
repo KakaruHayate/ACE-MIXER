@@ -72,12 +72,42 @@ tension :  λ = 0.7119 (x≥0) / 1.2881 (x<0),  N = 4.0847
 falsetto:  λ = 0.742  (x≥0) / 1.258  (x<0),  N = 0.8039
 ```
 
+## Frame rates
+
+The whole local analysis chain shares one frame grid:
+
+```text
+sr = 44100, hop = 256, nfft = 2048
+    -> 172.265625 fps, 5.805 ms per frame
+```
+
+| stage | rate |
+|---|---|
+| energy (128-band mel STFT) | 172.27 fps |
+| per-harmonic analysis (4-period Blackman) | 172.27 fps |
+| HNR / air (24 bands) | 172.27 fps |
+| Rd (LF template matching) | 172.27 fps |
+| tension / falsetto | 172.27 fps |
+| gaussian smoothing | 4 frames sigma, 16 frames radius = 23.2 ms / 92.9 ms |
+| Rd three-point smoothing | 3 frames = 17.4 ms (`round(0.02 / (hop/sr))`) |
+| **stored curve (dense layer)** | **960 ticks/s** |
+
+So the analysis runs at 172.27 Hz while the curve is stored per tick at
+960 Hz: about **5.57 ticks per analysis frame**. Do not confuse the two rates.
+
+An earlier empirical alignment suggested ~174.5 fps (5.5 ticks per frame),
+1.3% above the static constant. Treat the constant as authoritative.
+
+Running the chain at hop 512 instead of 256 halves the frame rate to
+86.13 fps, doubles the gaussian time constant to 46.4 ms, and changes the Rd
+smoothing kernel from 3 frames to 2. All three change the measured curves.
+
 ## Timing
 
 - Dense layers are one value per clip-local tick.
 - 480 ticks/beat; at 120 BPM that is **960 ticks/second**.
 - Frame → tick mapping must use absolute seconds; a residual under one frame
-  (~10 ms) is inaudible.
+  (5.8 ms) is inaudible.
 - A write must stay inside the clip's visible span; exceeding it is rejected.
 
 ## Model behaviour

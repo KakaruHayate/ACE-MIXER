@@ -13,7 +13,7 @@ from pathlib import Path
 import numpy as np
 
 SR = 44100
-HOP = 512
+HOP = 256
 NFFT = 2048
 TICKS_PER_SEC = 960.0
 PARAMS = ("air", "tension", "falsetto", "energy")
