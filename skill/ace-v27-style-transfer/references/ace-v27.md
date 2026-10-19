@@ -95,6 +95,29 @@ sr = 44100, hop = 256, nfft = 2048
 So the analysis runs at 172.27 Hz while the curve is stored per tick at
 960 Hz: about **5.57 ticks per analysis frame**. Do not confuse the two rates.
 
+### Model side (local ONNX, turbo mode)
+
+`<ACE Studio>/mlaudio/` ships the local pipeline as ONNX. The graphs give the
+model's own grid:
+
+| model | shapes | what it says |
+|---|---|---|
+| `refinegan2_sota_grouped_fp16.onnx` | mel `[1,128,960]` -> `[1,16,15360]` | ConvTranspose strides `4·4·4·2·2 = 256`; `960 × 256 = 245 760` samples = 5.5728 s, i.e. hop 256 @ 44.1 kHz |
+| `dcae_decoder_v4lite_1024_fp16.onnx` | codes `[1,6,64,8]` -> mel `[1,1,1024,128]` | 64 codes expand to 1024 mel frames: **16 mel frames per code** |
+| `mel2pitch_12M_1000k_fp32_dyn.onnx` | mel `[1,128,T]` -> f0 `[1,1,T]` | same mel grid |
+| `mel2dur.onnx` | mel `[1,94,T]` -> logits `[1,T,1024]` | 94-bin feature, side model |
+
+So the codec runs at `172.27 / 16 = 10.77 fps` (92.9 ms per code frame, ~89
+ticks), and one inference chunk is 1024 mel frames (5.944 s) from 64 codes.
+
+`dcae_decoder` takes only `codes`; the four vocal parameters are not its
+inputs, so in turbo mode they reach the audio through the mel/pulse path
+upstream of the vocoder.
+
+What is **not** measured: the frame rate of the payload sent to the remote
+model. The project stores curves per tick; whether the upload resamples them
+needs a packet capture.
+
 An earlier empirical alignment suggested ~174.5 fps (5.5 ticks per frame),
 1.3% above the static constant. Treat the constant as authoritative.
 
